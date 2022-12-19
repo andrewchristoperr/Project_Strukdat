@@ -126,20 +126,18 @@ class Order:
             temp = temp.next
 
     def hapusOrder(self, nama):
-        nama.upper()
         bool = False
         temp = self.head
         while temp:
             if temp.nama == nama:
                 self.hapus(nama)
                 bool = True
-                temp = temp.next
+            temp = temp.next
         if bool == False:
             print("Makanan tidak terdaftar")
 
     def editOrder(self, nama):
         quantity = int(input("Masukkan quantity: "))
-        nama.upper()
         bool = False
         temp = self.head
         while temp:
@@ -149,6 +147,7 @@ class Order:
             temp = temp.next
         if bool == False:
             print("Makanan tidak terdaftar")
+
     def addNotes(self, nama):
         notes = input("Notes: ")
         bool = False
@@ -181,35 +180,33 @@ def customer():
         print()
         if choice == 1:
             nomer = int(input("Masukkan nomer order pada menu: "))
-            if nomer == 1:
-                order.add(menu.head.nama, menu.head.harga)
-            elif nomer == 2:
-                temp = menu.head
-                order.tambahOrder(temp, nomer)
-            elif nomer == 3:
-                temp = menu.head
-                order.tambahOrder(temp, nomer)
+            temp = menu.head
+            order.tambahOrder(temp, nomer)
+                    
         elif choice == 2:
             if order.isEmpty() is True:
                 print("Keranjang masih kosong")
                 print()
             else:
-                nama = input("Masukkan nama makanan yang ingin dicancel: ")
+                nama = input("Masukkan nama makanan yang ingin dicancel: ").upper()
                 order.hapusOrder(nama)
         elif choice == 4:
             if order.isEmpty() is True:
                 print("Keranjang masih kosong")
                 print()
             else:
-                nama = input("Masukkan nama makanan yang ingin diedit quantitynya: ")
+                nama = input("Masukkan nama makanan yang ingin diedit quantitynya: ").upper()
                 order.editOrder(nama)
         elif choice == 5:
             if order.isEmpty() is True:
                 print("Keranjang masih kosong")
                 print()
             else:
-                nama = input("Masukkan nama makanan yang ingin diberi notes: ")
-                order.addNotes(nama)
+                nama = input("Masukkan nama makanan yang ingin diberi notes: ").upper()
+                order.addNotes(nama)  
+        else:
+            print("PASSWORD SALAH!")
+            print()
 menu = Menu()
 menu.add("KENTANG", 20000)
 menu.add("NASI GORENG", 25000)
@@ -252,9 +249,6 @@ if choice == 'ya':
                             temp.harga = harga
                         temp = temp.next
                 elif pilihan == 4:
-                    customer()  
-        else:
-            print("PASSWORD SALAH!")
-            print()
+                    customer()
 else:
     customer()
