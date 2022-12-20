@@ -53,9 +53,11 @@ class Menu:
             temp = temp.next
 
 class Order:
-    def __init__(self):
+    def __init__(self, namaPemesan):
         self.head = None
         self.next = None
+        self.namaPemesan = namaPemesan
+        self.ambil = False
 
     def add(self, nama, harga):
         temp = self.head
@@ -160,13 +162,146 @@ class Order:
         if bool == False:
             print("Makanan tidak terdaftar")
 
+    def countTotal(self):
+        temp = self.head
+        total = 0
+        i = 0
+        while temp:
+            total = total + (temp.quantity*temp.harga)
+            temp = temp.next
+
+        return total
+    
+    def rate(self):
+        print("Please rate your order!")
+        temp = self.head
+        while temp:
+            
+            print("Rate: ", temp.nama, " (1-5)")
+            rating = input("-> ")
+            temp.rating = rating
+            temp = temp.next
+        print("Thanks! :)")
+
+    def confirmOrder(self):
+        print(self.namaPemesan, "'s Order: ")
+        self.printList()
+        print("Total: Rp ", self.countTotal())
+
+class Queue:
+    def __init__(self):
+        self.front = self.rear = None
+        self.size = 0
+    
+    def addToQueue(self, order):
+        if self.front is None:
+            self.front = self.rear = order
+            self.size = self.size + 1
+            return self.size
+        
+        self.rear.next = order
+        self.rear = order
+        self.size = self.size + 1
+        return self.size
+    
+    def ambilOrderan(self, nomor):
+        if self.front is None:
+            return
+
+        if self.antrianSaatIni() == nomor:
+            itr = self.front
+            current = 1
+            while itr.next:
+                if itr is self.rear:
+                    break
+                if current == nomor:
+                    itr.ambil = True
+                current += 1
+                itr = itr.next
+            print("Thanks for buying! :)")
+            customer()
+        else:
+            print("Belum bisa mengambil orderan")
+            print("Antrian saat ini: ", self.antrianSaatIni())
+    
+    # hitung jumlah cust dlm 1 hari
+    def countCustomer(self):
+        return self.size
+
+    # buat cek nama yg diinput di antrian ke brp
+    def checkAntrian(self, nama):
+        antrian = 1
+        if self.front is None:
+            return
+        
+        itr = self.front
+        while itr.next:
+            if itr is self.rear:
+                break   
+            
+            if itr.namaPemesan == nama:
+                break
+            antrian += 1
+            itr = itr.next
+
+        return antrian
+    
+    # cek skrg lg antrian no brp
+    def antrianSaatIni(self):
+        itr = self.front
+        current = 1
+        while itr.next:
+            if itr == self.rear:
+                break
+            if itr.ambil == False:
+                break
+            current += 1
+            itr = itr.next
+        
+        return current
+
+    # list nama yg order
+    def orderList(self):
+        if self.front is None:
+            return
+
+        itr = self.front
+        while itr:
+            if itr is self.rear:
+                break
+            print(itr.namaPemesan)
+            itr = itr.next
+
+        print(itr.namaPemesan)
+
+def cekAntrian():
+    while True:
+        print("1. Cek Nomor Antrianmu")
+        print("2. Cek Antrian Saat Ini")
+        print("3. Ambil Orderan")
+        print("4. Exit")
+        choice2 = int(input("Choice: "))
+        if choice2 == 1:
+            nama = input("Nama: ")
+            print("No. Antrian: ", q.checkAntrian(nama))
+        elif choice2 == 2:
+            print("Antrian saat ini: ", q.antrianSaatIni())
+        elif choice2 == 3:
+            nomor = int(input("Masukkan nomor antrianmu: "))
+            q.ambilOrderan(nomor)
+        elif choice2 == 4:
+            customer()
+        else:
+            print("Tidak ada dalam pilihan")
+
 def customer():
+    namaPemesan = input("Masukkan nama anda: ")
     print("Menu: ")
     menu.printList()
     print()
     choice = 0
-    order = Order()
-    while(choice != 6):
+    order = Order(namaPemesan)
+    while(choice != 7):
         print("Keranjang: ")
         order.printList()
         print()
@@ -175,6 +310,7 @@ def customer():
         print("3. Confirm Order")
         print("4. Edit Order")
         print("5. Tambah Notes")
+        print("6. Cek Antrian")
         print("6. Exit")
         choice = int(input("Choice: "))
         print()
@@ -190,6 +326,15 @@ def customer():
             else:
                 nama = input("Masukkan nama makanan yang ingin dicancel: ").upper()
                 order.hapusOrder(nama)
+        elif choice == 3:
+            if order.isEmpty() is True:
+                print("Keranjang masih kosong")
+                print()
+            else:
+                order.confirmOrder()
+                print("No Antrian: ", q.addToQueue(order))
+                order.rate()
+                cekAntrian()
         elif choice == 4:
             if order.isEmpty() is True:
                 print("Keranjang masih kosong")
@@ -203,10 +348,9 @@ def customer():
                 print()
             else:
                 nama = input("Masukkan nama makanan yang ingin diberi notes: ").upper()
-                order.addNotes(nama)  
-        else:
-            print("PASSWORD SALAH!")
-            print()
+                order.addNotes(nama)
+        elif choice == 6:
+            cekAntrian()
 menu = Menu()
 menu.add("KENTANG", 20000)
 menu.add("NASI GORENG", 25000)
@@ -214,6 +358,7 @@ menu.add("AIR PUTIH", 3000)
 password = 'admin123'
 choice = input("Admin: (Ya/Tidak)\n")
 choice.lower()
+q = Queue()
 inputPass = ''
 if choice == 'ya':
     while inputPass != password:
@@ -250,5 +395,8 @@ if choice == 'ya':
                         temp = temp.next
                 elif pilihan == 4:
                     customer()
+        else:
+            print("PASSWORD SALAH!")
+            print()
 else:
     customer()
